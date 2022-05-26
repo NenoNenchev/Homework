@@ -49,25 +49,26 @@ for(i in 1:100){
   }
   print(i)}
 
-
 stock_prices <- tidyquant::tq_get("NKE")
 
 # 1. 
 stock_prices <- tidyquant::tq_get("NKE") %>% 
   dplyr::mutate(EMA26 = TTR::EMA(stock_prices$adjusted, n = 26 ))
 
-
+    
 # 2.
 stock_prices <- tidyquant::tq_get("NKE") %>% 
   dplyr::mutate(EMA26 = TTR::EMA(stock_prices$adjusted, n = 26 ),
                 EMA12 = TTR::EMA(adjusted, n = 12))
 
+  
 # 3.
 stock_prices <- tidyquant::tq_get("NKE") %>% 
   dplyr::mutate(EMA26 = TTR::EMA(stock_prices$adjusted, n = 26 ),
                 EMA12 = TTR::EMA(adjusted, n = 12), 
                 MACD_line = EMA12 - EMA26)
 
+  
 # 4.
 stock_prices <- tidyquant::tq_get("NKE") %>% 
   dplyr::mutate(EMA26 = TTR::EMA(stock_prices$adjusted, n = 26 ),
@@ -75,12 +76,14 @@ stock_prices <- tidyquant::tq_get("NKE") %>%
                 MACD_line = EMA12 - EMA26, 
                 Signal_Line = TTR::EMA(MACD_line, n =9))
 
+  
 # 5
 stock_prices <- tidyquant::tq_get("NKE") %>% 
   dplyr::mutate(EMA26 = TTR::EMA(adjusted, n = 26 ),
                 EMA12 = TTR::EMA(adjusted, n = 12), 
                 MACD_line = EMA12 - EMA26, 
                 Signal_Line = TTR::EMA(MACD_line, n =9)) %>% 
+  
   ungroup() %>%
   dplyr::filter(!is.na(MACD_line & EMA26)) %>% 
   dplyr::mutate(cross = case_when(MACD_line > Signal_Line & dplyr::lag(Signal_Line) > dplyr::lag(MACD_line) ~ "buy",
